@@ -1,0 +1,583 @@
+#!/usr/bin/sh
+set -x
+
+#j1=2000 
+#j2=4500
+#j3=6500
+#j4=9000
+#j5=12000
+#j6=15000
+#j7=23000
+#j8=31000
+
+
+
+
+
+#CN=7
+#MODEL=c
+
+##`
+##根据所选样式模式Model判断词频等级数量
+#if [ $MODEL = c ];then
+#	NO=$CN
+#elif [ $MODEL = b ];then
+#	NO=$BN
+#elif [ $MODEL = g ];then
+#	NO=$GN
+#fi
+#echo $NO
+
+
+#echo $GN
+
+#for j in `seq (echo $GN) -1 1`
+#do
+#  echo $j
+#done
+
+#exit 0
+
+
+#SOURCELIST=coca3w9_treed_list
+#SOURCEDICT=coca3w9_treed_dict_sh_done
+SOURCEDICT=listDEL
+SOURCELIST=dictDEL
+WORKSPACE=epub
+DATE=`date "+%d%H%M"`
+
+rm -rf epub
+mkdir -p $WORKSPACE
+
+
+#单词分频等级 Level
+
+
+j1=2000 
+j2=4500
+j3=6500
+j4=9000
+j5=12000
+j6=15000
+j7=23000
+j8=31000
+
+##junior
+#j1=2000;j2=4500;j3=6500;j4=9000;j5=12000;j6=15000;j7=23000;j8=31000
+##middle
+#m1=4500;m2=6500;m3=10000;m4=15000;m5=20000;m6=28000;m7=36000
+##senior
+#s1=6000;s2=9000;s3=15000;s4=20000;s5=40000
+
+##词频标记样式 Model
+
+##词频标记样式 Model
+
+#1、彩色 Color
+CN=8
+c1='<font color=DimGray>\1</font>'
+c2='<font color=green>\1</font>'
+c3='<font color=teal>\1</font>'
+c4='<font color=olive>\1</font>'
+c5='<font color=purple>\1</font>'
+c6='<font color=maroon>\1</font>'
+c7='<font color=navy>\1</font>'
+c8='<font color=silver>\1</font>'
+
+GN=4
+#2、斜体+淡色 Gray
+g1='<i>\1</font></i>'
+g2='<i><font color=grey>\1</font></i>'
+g3='<i><font color=silver>\1</font></i>'
+g4='<font color=silver>\1</font>'
+
+BN=7
+#3、角标 Subscript (1为最简单)
+b1='\1¹'
+b2='\1²'
+b3='\1³'
+b4='\1⁴'
+b5='\1⁵'
+b6='\1⁶'
+b7='\1⁷'
+
+
+
+pre(){
+##预处理epub文件####################
+
+rename 's/[ ]+/_/g' *.epub #删除文件名中的空格
+#批量修改epub文件后缀为zip
+for F in *.epub ; do cp $F ${F%.epub}.zip ;done
+#批量解压缩到WORKSPACE目录下
+for FILE in *.zip
+do
+FILENAME=$(echo $FILE|cut -d'.' -f1)
+unzip $FILE -d $WORKSPACE/$FILENAME
+done
+
+#函数 提取所有要处理的html或xhtml文件
+
+#---------------------------------------------
+#所有*html文件，包括小文件
+html(){ 
+for html in $(find epub -maxdepth 10 -type f -name "*.*html");do
+#for i in 'epub/*/*/*.*html' 'epub/*/*.*html' ;do
+    echo "$html"
+done
+}
+
+HTML=$(html)
+echo $HTML
+#--------------------------------------------
+
+#countWord(){
+#########过滤包含小于特定word数量的html文件##########
+
+#查找html/xhtml文件
+for COUNT in $(find epub -maxdepth 10 -type f -name "*.*ml")
+do
+#    H=$(ls -l $HTML | awk '{print $5}')
+
+####测试html文件包含的非标签内容word数量
+#    H=$(sed -e "s/>/>\n/g" -e "s/</\n</g" $COUNT | sed "/</d" | wc -w)
+#    if [ $H -lt 1000 ];then
+#        if [ "${COUNT##*.}" = "html" ]; then
+#        mv "$COUNT" "${COUNT%.html}.htmlB"
+#        elif [ "${COUNT##*.}" = "xhtml" ]; then
+#        mv "$COUNT" "${COUNT%.xhtml}.xhtmlB"
+#        fi
+#    fi
+#done
+
+#删除<尖括号>部分内容
+    H=$(sed -e "s/>/>\n/g" -e "s/</\n</g" $COUNT \
+	| sed "/</d" | wc -w) 
+
+#如果word数量小于1000则将文件改名
+    if [ $H -lt 1000 ];then
+        if [ "${COUNT##*.}" = "html" ]; then
+        mv "$COUNT" "${COUNT%.html}.htmlB"
+        elif [ "${COUNT##*.}" = "xhtml" ]; then
+        mv "$COUNT" "${COUNT%.xhtml}.xhtmlB"
+        fi
+    fi
+done
+#}
+
+#--------------------------------------------
+htmlbig(){ #经过字数筛选的*html文件
+for htmlbig in $(find epub -maxdepth 10 -type f -name "*.*html");do
+    echo "$htmlbig"
+done
+}
+#--------------------------------------------
+
+}
+##################预处理结束###############################
+
+
+
+prefilter(){
+################提取需要排除的word#####################
+
+#Wordlist提取前2000单词（需剔除）
+L2000=$(head -n 2000 $SOURCELIST)$'\n' #结尾回车
+
+#每次转换从html文件提取代码文字（需剔除）
+#整理成列表
+#列表单词收尾加@标记（@word@）
+
+FILTER=`sed -r -e "s/>/>\n/g" -e "s/</\n</g" $HTML \
+    | sed -n "/</p" | sed -e "s/\b/\n/g" -e "s/_/\n/g" \
+    | sed "/\W/d" | tr -d 0-9 | sed "/^$/d" \
+    | awk '!x[$0]++'`
+
+FILTERALL=$L2000$FILTER
+#exit 0
+FILTRATE=`echo "$FILTERALL" | sed -r -e 's/\s+//g' -e '/^$/d' \
+    | awk '{if($0 ~ "[a-zA-Z]+"){print "@"$0"@"}else{print}}' \
+    | tr '\n' '|' | sed 's/|$//'`
+echo $FILTRATE
+
+#exit 0
+##合并前2000和<code>文字
+#FILTRATE=$L2000$FILTER
+
+echo $FILTRATE
+#exit 0
+
+####根据以上生成的剔除列表从词典word列表中删除
+#给词典word列表加@标记@并剔除FILTRATE中的word
+WORDLIST=`sed -e 's/^/@/g' -e 's/$/@/g' $SOURCELIST | sed -r "s#($FILTRATE)#\1AAAA#g" | sed 's/@//g' | sed '/AAAA/d'`
+
+echo $WORDLIST
+
+###根据以上生成的剔除列表从词典文件中删除相应条目
+FOOTDICT=`sed -r 's/\t/@\t@/g' $SOURCEDICT \
+	| sed -r "s#($FILTRATE)#\1\tAAAA#g" \
+	| sed '/AAAA/d' | sed "/^$/d"`
+echo $FOOTDICT > footdictDEL
+}
+################过滤与剔除完成##############################
+
+
+###############主 函 数 ###########################
+auto_convert(){
+#######给html文件添加词频标记和释义#################
+
+LEVEL=$1
+MODEL=$2
+ADDNOTE=$3
+#根据选定的Level等级提取相应等级的word范围
+	for n in `seq 6 -1 1`;do
+	ListN=$(echo "$WORDLIST" | head - -n$(eval echo \$$LEVEL$[ n+1 ]) \
+	| tail -n$[ $(eval echo \$$LEVEL$[ n+1 ]) - $(eval echo \$$LEVEL$n) ])
+
+#整理相应word范围的word列表，添加"\b"和"|"为边界（\bword\b）
+        EXP=`echo "$ListN" | sed -r -e 's/\s+//g' -e '/^$/d' \
+        | awk '{if($0 ~ "\\\w+"){print "\\\b"$0"\\\b"}else{print}}' \
+        | tr '\n' '|' | sed 's/|$//'`
+
+#开始根据ListN和词频样式Model逐级为html文件添加标记
+    echo "Converting $n ………………"
+#        sed -r -i "s#\b($EXP)\b#$(eval echo \$$MODEL$n)#g" $HTML
+        sed -r -i "s#($EXP)#$(eval echo \$$MODEL$n)#g" $HTMLBIG
+    done
+
+#如果选择添加添加footnote（相应标记word的词典释义），此处开始运行
+    if [ $ADDNOTE = y ];then
+
+#根据选择的Level等级从过滤后的词典文件中提取相应等级Model的条目范围并导出为文件
+	echo "$FOOTDICT" | head - -n$(eval echo \$${LEVEL}7) \
+	| tail -n$[ $(eval echo \$${LEVEL}7) - $(eval echo \$${LEVEL}1) ] \
+	| sed 's/@//g' > dictlist
+
+#根据过滤后的词典文件相应等级范围的条目逐级添加释义到html文件的<body>部分</body>
+    python -c 'import dic9;print dic9.DReplace("dictlist","'$WORKSPACE'")'
+    sed -i "s/ⁿ<\/a>\([⁰¹²³⁴⁵⁶⁷⁸⁹]\+\)/\1<\/a>/g" $HTML
+    sed -i "s/ⁿ<\/a>/<\/a>/g" $HTML
+    fi
+}
+
+#################转 换 结 束 #######################################
+
+
+
+
+#函数 输入/选择自定义词频等级
+custom_convert(){
+    echo -n "Please input the start position（1-20000）:" 
+    read n1
+    echo -n "First level end position($n1-20000):"
+    read n2
+    echo -n "Second level end position（$n2-20000）:" 
+    read n3
+    echo -n "Third level end position（$n3-20000）:"
+    read n4
+    echo -n "Fourth level end position（$n4-20000）"
+    read n5
+
+#处理自定义模式替换操作
+for i in `seq 5`;do
+    echo "$WORDLIST" | head - -n$(eval echo \$n$[ i+1 ]) \
+    | tail -n$[ $(eval echo \$n$[ i+1 ]) - $(eval echo \$n$i) ] > tmplist
+    EXP=`cat tmplist | sed -r -e 's/\s+//g' -e '/^$/d' \
+    | awk '{if($0 ~ "\\\w+"){print "\\\b"$0"\\\b"}else{print}}' \
+    | tr '\n' '|' | sed 's/|$//'`
+    echo "Converting $i ………………"
+    sed -r -i "s#($EXP)#$(eval echo \$$MODEL$i)#g" $HTMLDIR
+done
+    if [ $ADDNOTE = y ];then
+     echo "$FOOTDICT" | head - -n${n5} | tail -n$[ $n5 - $n4 ] > dictlist
+    python -c 'import dic9;print dic9.DReplace("dictlist","'$WORKSPACE'")'
+#    rm tmplist
+    fi
+}
+
+
+
+convert_main(){
+########################################################
+#函数的三个参数顺序,functrion a b c
+LEVEL=$1
+MODEL=$2
+ADDNOTE=$3
+
+#注：如果变量值为空会出错，所以要用[[]]
+#if [[ $LEVEL = u ]]||[[ $LEVEL = U ]];then
+#    echo "Custom Convert"
+#    custom_convert
+#elif [[ $LEVEL = j ]]||[[ $LEVEL = m ]]||[[ $LEVEL = s ]];then
+#    echo "level"
+#echo 
+echo $LEVEL
+echo $MODEL
+echo $ADDNOTE
+#========================================================
+    if [ $MODEL = c ]||[ $MODEL = g ];then
+#根据选定的Level等级提取相应等级的word范围
+        for n in `seq 6 -1 1`;do
+        ListN=$(echo "$WORDLIST" | head - -n$(eval echo \$$LEVEL$[ n+1 ]) \
+        | tail -n$[ $(eval echo \$$LEVEL$[ n+1 ]) - $(eval echo \$$LEVEL$n) ])
+#整理相应word范围的word列表，添加"\b"和"|"为边界（\bword\b）
+        EXP=`echo "$ListN" | sed -r -e 's/\s+//g' -e '/^$/d' \
+        | awk '{if($0 ~ "\\\w+"){print "\\\b"$0"\\\b"}else{print}}' \
+        | tr '\n' '|' | sed 's/|$//'`
+
+#开始根据ListN和词频样式Model逐级为html文件添加标记
+    echo "Converting $n ………………"
+        sed -r -i "s#($EXP)#$(eval echo \$$MODEL$n)#g" $HTMLBIG
+    done
+
+#--------------------------------------------------------
+    elif [ $MODEL = g ];then
+        for n in `seq 3 -1 1`;do
+        ListN=$(echo "$WORDLIST" | head - -n$(eval echo \$$LEVEL$[ n+1 ]) \
+        | tail -n$[ $(eval echo \$$LEVEL$[ n+1 ]) - $(eval echo \$$LEVEL$n) ])
+#整理相应word范围的word列表，添加"\b"和"|"为边界（\bword\b）
+        EXP=`echo "$ListN" | sed -r -e 's/\s+//g' -e '/^$/d' \
+        | awk '{if($0 ~ "\\\w+"){print "\\\b"$0"\\\b"}else{print}}' \
+        | tr '\n' '|' | sed 's/|$//'`
+
+#开始根据ListN和词频样式Model逐级为html文件添加标记
+    echo "Converting $n ………………"
+        sed -r -i "s#($EXP)#$(eval echo \$$MODEL$n)#g" $HTMLBIG
+    done
+    fi
+
+#========================================================
+#如果选择添加footnote（相应标记word的词典释义），此处开始运行
+    if [ $ADDNOTE = y ];then
+
+#根据选择的Level等级从过滤后的词典文件中提取相应等级Model的条目范围并导出为文件
+	echo "$FOOTDICT" | head - -n$(eval echo \$${LEVEL}7) \
+	| tail -n$[ $(eval echo \$${LEVEL}7) - $(eval echo \$${LEVEL}1) ] \
+	| sed 's/@//g' > dictlist
+
+#根据过滤后的词典文件相应等级范围的条目逐级添加释义到html文件的<body>部分</body>
+    python -c 'import dic9;print dic9.DReplace("dictlist","'$WORKSPACE'")'
+    sed -i "s/ⁿ<\/a>\([⁰¹²³⁴⁵⁶⁷⁸⁹]\+\)/\1<\/a>/g" $HTML
+    sed -i "s/ⁿ<\/a>/<\/a>/g" $HTML
+    fi
+#else
+#    echo "Input wrong letter,please try again"
+#fi
+}
+
+
+
+
+
+################### 交 互 选 择 #####################################
+#输入/选择等级与样式
+echo "############################################"
+echo "#           CONVERT AND REPLACE            #"
+echo "############################################"
+    echo -n "[a]utomatic or [m]anual? (default=a):"
+    read -t 30 AM
+    AM=${AM:=a}
+if [ $AM = a ];then
+    pre #预处理
+    HTMLBIG=$(htmlbig) #赋值给该变量（经过字数筛选的文件）
+    prefilter #过滤与剔除
+    auto_convert j b y
+#    postzip
+#    post_zip
+#    pre_zip
+#    auto_convert j b n
+#    post_zip
+#    pre_zip
+#    auto_convert j c n
+#    post_zip
+#    exit 0
+elif [ $AM = m ];then
+    echo "1 Junior(j)"
+    echo "2 Middle(m)"
+    echo "3 Senior(s)"
+    echo "4 User-defining(u)"
+    echo -n "please select level(j\m\s\u,default=j):"
+    read -t 30 LEVEL
+    LEVEL=${LEVEL:=j}
+    echo "1 Black(b)"
+    echo "2 Color(c)"
+    echo "3 Gamma(g)"
+    echo -n "Please select model(b\c\g,default=b)："
+    read -t 30 MODEL
+    MODEL=${MODEL:=b}
+    echo -n "Do you want add footnote?([y]es or [n]o):"
+    read -t 30 ADDNOTE
+    ADDNOTE=${ADDNOTE:=y}
+            pre
+            HTMLBIG=$(htmlbig)）
+            prefilter
+    if [ $LEVEL:=u ];then
+            pre
+            HTMLBIG=$(htmlbig)）
+            prefilter
+            custom_convert
+    fi
+fi
+
+
+
+
+#exit 0
+#postzip(){
+############## 收 尾 ###############################
+for HTML in $(find epub -maxdepth 10 -type f -name "*.*mlB")
+do
+        if [ "${HTML##*.}" = "htmlB" ]; then
+        mv "$HTML" "${HTML%.htmlB}.html"
+        elif [ "${HTML##*.}" = "xhtmlB" ]; then
+        mv "$HTML" "${HTML%.xhtmlB}.xhtml"
+        fi
+done
+
+mkdir -p Result && cd $WORKSPACE
+
+#批量压缩单个epub电子书，不包含电子书目录本身
+for i in `find ./* -type d`;do zip $i.zip `find $i | grep -v "$i$"`;done
+rename 's/%#/ /g' *.zip 
+
+#添加识别前缀
+for F in *.zip ; do 
+    mv -f "$F" ../Result/"$(echo $LEVEL$MODEL$ADDNOTE \
+	| tr 'a-z' 'A-Z')$DATE-${F%.zip}.epub"
+done
+
+cd ../ && rename 's/%#/ /g' *.epub && rm *.zip 
+
+echo "##############################################"
+echo "#                                            #"
+echo "#                 DONE!                      #"
+echo "#                                            #"
+echo "###############################################"
+
+#}
+
+exit 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+######################3=================================
+
+
+
+
+
+
+##从filter剔除部分字符串（包括含有“-”的行）
+##EXP=`echo "$FILTER" | sed -r -e 's/\s+//g' -e '/^$/d' \
+##    | awk '{if($0 ~ "\\\w+"){print "\\\b2"$0"2\\\b"}else{print}}' \
+##    | tr '\n' '|' | sed 's/|$//'` 
+##EXP=`cat filter | sed -r -e 's/\s+//g' -e '/^$/d' \
+##    | awk '{if($0 ~ "\\\w+"){print "\\\b2"$0"2\\\b"}else{print}}' \
+##    | tr '\n' '|' | sed 's/|$//'` 
+
+##EXP=`echo "$FILTER" | sed -r -e 's/\s+//g' -e '/^$/d' \
+##    | awk '{if($0 ~ "[a-zA-Z]+"){print "2"$0"2"}else{print}}' \
+##    | tr '\n' '|' | sed 's/|$//'` 
+#EXP=`echo "$FILTER" | sed -r -e 's/\s+//g' -e '/^$/d' \
+#    | awk '{if($0 ~ "[a-zA-Z]+"){print "@"$0"@"}else{print}}' \
+#    | tr '\n' '|' | sed 's/|$//'` 
+##echo $EXP >> expDELtest
+##EXP=`cat expDELtest`
+##echo $EXP
+
+#WORDLIST=`sed -e 's/^/@/g' -e 's/$/@/g' $SOURCELIST | sed -r "s#($EXP)#\1AAAA#g" | sed 's/@//g' | sed '/AAAA/d'`
+
+
+
+
+#####添加2为边界字符，并从列表中删除改行；
+#####WORDLIST=$(sed -e "s/^/2/g" -e "s/$/2/g" $SOURCELIST \
+#####| sed -e "s($EXP)##g" -e 's/2//g' -e '/^$/d')
+
+
+#####WORDLIST=`sed -e "s/^/2/g" -e "s/$/2/g" $SOURCELIST | tr '\n' '|' | sed 's/|$//' |
+
+
+##WORDLIST=`echo "$EXP" | sed -e 's/^/@/g' -e 's/$/@/g' | sed "s#@($EXP)@#\1AAAA#g"`
+### | sed 's/@//g' | sed '/AAAA/d'`
+#WORDLIST=`sed -e 's/^/@/g' -e 's/$/@/g' $SOURCELIST | sed -r "s#($EXP)#\1AAAA#g" | sed 's/@//g' | sed '/AAAA/d'`
+
+##从filter删除字典中相应的行
+
+
+#FOOTDICT=`sed -r 's/\t/@\t@/g' $SOURCEDICT | sed -r "s#($EXP)#\1\tAAAA#g"\
+#    | sed '/AAAA/d' | sed "/^$/d"`
+
+#exit 0
+##FOOTDICT=`sed -r "s#($FOOTEXP)#\1AAAA#g" $SOURCEDICT`
+
+#exit 0
+# \
+#    | sed '/AAAA/d' | sed "/^$/d"`
+#exit 0
+#echo $WORDLIST > wordlistDEL
+
+##| sed 's/2|2/2/g' 
+#echo $WORDLIST > wordlistDEL
+
+#exit 0
+
+#echo $WORDLIST > wordlistDEL
+
+#exit 0
+
+##脚注过滤列表预处理（添加制表符为边界识别符）
+#FOOTEXP=`cat filtettest | sed -r -e 's/\s+//g' -e '/^$/d' \
+#    | awk '{if($0 ~ "\\\w+"){print "\t"$0"\t"}else{print}}' \
+#    | tr '\n' '|' | sed 's/|$//' |sed 's/[\t]//g'`
+
+#echo $FOOTEXP >> footexptest
+#echo "添加边界完成"
+##exit 0
+
+##从filter删除字典中相应的行
+##FOOTDICT=`sed -r "s#($FOOTEXP)#\1\sAAAA#g" $SOURCEDICT \
+##    | sed '/AAAA/d' | sed "/^$/d"`
+##echo $FOOTDICT
+
+##exit 0
+
+#FOOTDICT=`sed -r "s#\t($FOOTEXP)#\1AAAA#g" $SOURCEDICT \
+#	| sed -e '/AAAA/d' -e "/^$/d" | cat - >> footdicttest`
+
+
+##混成一行时编号前回车，似乎不需要了
+#sed 's/ \([[:digit:]]\)/\n\1/g' footdicttest >> footdicttest1
+##echo $FOOTDICT1
+
+#FOOTDICT1=`cat footdicttest1`
+
+
+
+
+

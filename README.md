@@ -13,12 +13,16 @@
 
 效果演示
 
+PC版FBreader效果演示：
+暗色搭配（实际使用中暗色体验最好）                                    亮色搭配
 ![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-42-36.jpg)
 
-![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-42-34.jpg）
+![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-42-34.jpg)
 
+手机阅读器演示：
 ![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-43.jpg)
 
-![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-45.jpg）
+![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-45.jpg)
+
 
 

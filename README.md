@@ -14,7 +14,7 @@
 效果演示
 
 
-
+![Aaron Swartz](https://github.com/sandae/epubFreq/blob/master/photo_2018-08-29_12-42-34.jpg）
 ![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-43.jpg)
 
 ![Aaron Swartz](https://github.com/sandae/epubFreq/blob/master/photo_2018-08-29_12-28-45.jpg）

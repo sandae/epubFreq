@@ -12,9 +12,10 @@
 新手习作，希望能帮助完善
 
 效果演示
-![Aaron Swartz](https://github.com/sandae/epubFreq/blog/master/photo_2018-08-29_12-42-36.jpg）
 
-![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-42-34.jpg）
+![Aaron Swartz1](https://github.com/sandae/epubFreq/blog/master/photo_2018-08-29_12-42-36.jpg）
+
+![Aaron Swartz2](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-42-34.jpg）
 
 ![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-43.jpg)
 

@@ -7,11 +7,13 @@
 #使用方法：运行脚本后自动转换当前目录下所有epub电子书
 #         默认模式为初级词频等级/彩色标识/内置释义
 #         可选择自定义词频等级模式和分级数量，样式，组合
+# 主要包含以下函数：
+# pre #预处理epub文件
+# prefilter 过滤与剔除部分word
+# convert_main 主函数，执行转换
 
 
 ########### 全 局 变 量################## 
-#SOURCEDICT=100dict
-#SOURCELIST=100list
 SOURCEDICT=coca3w9dict
 SOURCELIST=coca3w9dict
 WORKSPACE=epub
@@ -19,8 +21,6 @@ DATE=`date "+%d%H%M"`
 echo $DICT_COUNT
 rm -rf epub
 mkdir -p $WORKSPACE
-
-
 
 #全局词频等级数量 
 NO=6 
@@ -69,10 +69,7 @@ pre(){
 #脚本参数，有参数（书名）时转换该书，否则转换所有epub
 EPUB_FILES=$1
 if [ ! $EPUB_FILES ]; then
- echo "IS NULL"
  EPUB_FILES=./*.epub
-  ls $EPUB_FILES
- echo "NOT NULL"
 fi
 
 rename 's/[ ]+/_/g' *.epub 
@@ -134,8 +131,11 @@ prefilter(){
 #列表单词收尾加@标记（@word@）
 echo $HTML
 FILTER=`sed -r -e "s/>/>\n/g" -e "s/</\n</g" $HTMLBIG \
-    | sed -n "/</p" | sed -e "s/\b/\n/g" -e "s/_/\n/g" \
-    | sed "/\W/d" | tr -d 0-9 | sed "/^$/d" \
+    | sed -n "/</p" \
+    | sed -e "s/\b/\n/g" -e "s/_/\n/g" \
+    | sed "/\W/d" \
+    | tr -d 0-9 \
+    | sed "/^$/d" \
     | awk '!x[$0]++'`
 
 ##Wordlist提取前2000单词（需剔除）
@@ -144,9 +144,11 @@ L2000=$(head -n 2000 $SOURCELIST)$'\n'
 FILTERALL=$L2000$FILTER 
 
 #删除连续空格和空行|Word前后加@Word@|换行符改为分割符"|"|删除末尾"|"
-FILTRATE=`echo "$FILTERALL" | sed -r -e 's/\s+//g' -e '/^$/d' \
+FILTRATE=`echo "$FILTERALL" \
+    | sed -r -e 's/\s+//g' -e '/^$/d' \
     | awk '{if($0 ~ "[a-zA-Z]+"){print "@"$0"@"}else{print}}' \
-    | tr '\n' '|' | sed 's/|$//'`
+    | tr '\n' '|' \
+    | sed 's/|$//'`
 #----------------------------------------------------
 echo "************过滤结果 FILTRATE  ***************"
 echo "$FILTRATE"
@@ -172,7 +174,6 @@ FOOTDICT=`cat $(eval echo "$SOURCEDICT") \
 #######################  主  函  数  #######################
 convert_main(){
 LEVEL=$1 MODEL=$2 ADDNOTE=$3
-
 #-----------------------------------------------------------------
 #根据选定的Level等级提取相应等级的word范围
     #$NO为相应模式的等级数量
@@ -182,15 +183,15 @@ echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
     #LISTN为相应等级的word列表
     LISTN=$(echo "$WORDLIST" | head - -n$(eval echo \$$LEVEL$[ n+1 ]) \
     | tail -n$[ $(eval echo \$$LEVEL$[ n+1 ]) - $(eval echo \$$LEVEL$n) ])
-echo "VVVVVVVVVVVVVVVVVVVVVVVVVVVVVv"
 
 #---------------------------------------------------------------
 ##根据ListN和词频样式Model逐级为html文件添加标记
     #添加边界符\bword\b| | 删除连续空格和空行 | 删除末尾“|”
-    EXP=`echo "$LISTN" | sed -r -e 's/\s+//g' -e '/^$/d' \
+    EXP=`echo "$LISTN" \
+    | sed -r -e 's/\s+//g' -e '/^$/d' \
     | awk '{if($0 ~ "\\\w+"){print "\\\b"$0"\\\b"}else{print}}' \
-    | tr '\n' '|' | sed 's/|$//'`
-echo "$EXP"
+    | tr '\n' '|' \
+    | sed 's/|$//'`
 
 
 ### 核心步骤 根据整理好的wordlist批量添加词频样式（MODEL）
@@ -281,13 +282,10 @@ done
 cd ../ && rename 's/%#/ /g' *.epub && rm *.zip 
 
 echo "##############################################"
-echo "#                                            #"
-echo "#                 DONE!                      #"
-echo "#                                            #"
+echo "#                 转换完成!                    #"
 echo "###############################################"
 
 }
-
 
 
 
@@ -348,10 +346,10 @@ elif [ $AM = m ];then
             echo "彩色+内置释义模式请回车确认"
             read MODEL
             LEVEL=${LEVEL:=j}
-                pre #预处理
-                htmlbig #赋值给该变量（经过字数筛选的文件）
-                prefilter #过滤与剔除
-                convert_main j d y #自动模式默认组合
+                pre
+                htmlbig
+                prefilter
+                convert_main j d y
                 postzip
         else
                 pre

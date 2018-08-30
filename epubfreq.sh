@@ -4,7 +4,7 @@
 ########### 全 局 变 量################## 
 #-----------------------------------
 #词典文件格式为：\tWORD\tMEANING
-SOURCEDICT=coca3w9dict
+SOURCEDICT=dict
 #如果Wordlist不存在则根据词典提取出来
 SOURCELIST=wordlist
 if [  ! -f wordlist ];then

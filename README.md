@@ -21,7 +21,7 @@ PC版FBreader效果演示：
 
 
 角标模式演示：
-![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-42-34.jpg)
+![Aaron Swartz](https://github.com/sandae/epubFreq/blob/master/image/photo_2018-08-29_12-42-34.jpg)
 
 
 
@@ -33,5 +33,7 @@ PC版FBreader效果演示：
 ![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-43.jpg)
 
 
+https://github.com/sandae/epubFreq/blob/master/image/photo_2018-08-29_12-42-34.jpg
 
+https://github.com/sandae/epubFreq/blob/master/image/photo_2018-08-29_12-42-36.jpg
 

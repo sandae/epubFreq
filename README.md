@@ -27,13 +27,9 @@ PC版FBreader效果演示：
 
 手机阅读器效果演示：
 
-![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-45.jpg)
+![Aaron Swartz](https://github.com/sandae/epubFreq/blob/master/image/photo_2018-08-29_12-28-45.jpg)
 
 
-![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-43.jpg)
+![Aaron Swartz](https://github.com/sandae/epubFreq/blob/master/image/photo_2018-08-29_12-28-43.jpg)
 
-
-https://github.com/sandae/epubFreq/blob/master/image/photo_2018-08-29_12-42-34.jpg
-
-https://github.com/sandae/epubFreq/blob/master/image/photo_2018-08-29_12-42-36.jpg
 

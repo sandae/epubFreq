@@ -16,7 +16,7 @@
 效果演示
 
 PC版FBreader效果演示：
-暗色搭配（实际使用中暗色体验最好）                                    ×××亮色搭配×××
+左边为暗色调样式（实际使用中暗色体验最好）， 右边为亮色，只做演示
 ![Aaron Swartz](https://github.com/sandae/epubFreq/blob/master/image/photo_2018-08-29_12-42-36.jpg)
 
 

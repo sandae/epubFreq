@@ -6,7 +6,9 @@
 
 
 使用方法：
+
 1、运行脚本epubfreq.sh,自动转换当前目录下所有epub电子书,或使用参数（epub文件名）转换指定epub文件
+
 2、默认模式为初级词频等级/彩色标识/内置释义,可选择自定义词频等级模式和分级数量，样式，组合
 
 新手习作，希望能帮助完善
@@ -24,10 +26,11 @@ PC版FBreader效果演示：
 
 手机阅读器效果演示：
 
+![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-45.jpg)
+
 
 ![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-43.jpg)
 
-![Aaron Swartz](https://github.com/sandae/epubFreq/raw/master/photo_2018-08-29_12-28-45.jpg)
 
 
 

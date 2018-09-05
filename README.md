@@ -8,9 +8,13 @@
 使用方法：
 
 1、运行脚本
+
 bash epubfreq.sh
+
 自动转换当前目录下所有epub电子书
+
 bash epubfreq.sh ebpufile.epub
+
 转换当前目录下指定epub电子书。
 
 2、默认模式为初级词频等级/彩色标识/内置释义,可选择自定义词频等级模式和分级数量，样式，组合

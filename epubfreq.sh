@@ -422,6 +422,7 @@ echo -e "\e[34m   8000以后单词添加内置释义，阅读时不需要查词�
 echo -e "\e[34m * 词频数据取自美国当代英语语料库COCA 6万词频数据，剔除重复 \e[0m "
 echo -e "\e[34m   等部分，共计3.8万词条 可使用自定义词频数据，详见dict文件\e[0m "
 echo -e "\e[34m * 效果预览https://github.com/sandae/epubFreq \e[0m "
+echo -e "\e[31m * 注意：依赖python2.x \e[0m "
 echo -e "\e[34m   \e[0m "
 echo -e "\e[34m   \e[0m "
     echo -e "\e[34m请选择词频标记样式\e[0m "

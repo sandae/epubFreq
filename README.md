@@ -31,6 +31,7 @@ bash epubfreq.sh ebpufile.epub
 
 
 **依赖：**
+bash shell
 python2.x
 
 

@@ -368,7 +368,7 @@ sed -ri 's/#%//g' $html_big
 
 clear_left(){
 #此处匹配python替换过sed未替换的word，删除多余标签代码
-sed -ri 's/([^"]|[^;]"|[^e]:") epub[^>]*>((\w+[ -]*){1,3})([.,:"]*)(<\/a>)*/\1\2\4/g' $html_big
+sed -ri 's/([^"]|[^;]"|[^e]:") epub:type=\"n[^>]*>((\w+[ -]*){1,3})([.,:"]*)(<\/a>)*/\1\2\4/g' $html_big
 #sed -ri 's/<a style="color:\w+; text-decoration:none;"([^ ])/\1/g' $html_big
 sed -ri 's/<a style="color:\w+; text-decoration:none;"([^ ]| [^e])/\1/g' $html_big
 }

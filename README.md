@@ -22,16 +22,16 @@ bash epubfreq.sh ebpufile.epub
 可选择自定义词频等级模式和分级数量，样式，组合
 
 
-**新手习作，性能较差，且shell和python混合，希望帮助完善，或者用python/perl重写
+**新手习作，性能较差，且shell和python混合，希望帮助完善，或者用python/perl重写**
 
 
-**依赖：
+**依赖：**
 python2.x
 
 
 
 
-**效果演示
+**效果演示**
 
 PC版FBreader效果演示：
 左边为暗色调样式（实际使用中暗色体验最好）， 右边为亮色，只做演示

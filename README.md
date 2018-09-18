@@ -20,7 +20,11 @@ bash epubfreq.sh ebpufile.epub
 2、默认模式为初级词频等级/彩色标识/内置释义,可选择自定义词频等级模式和分级数量，样式，组合
 
 
-新手习作，希望有人能用python或者perl重写
+新手习作，性能较差，且shell和python混合，希望帮助完善，或者用python/perl重写
+
+
+依赖：
+python2.x
 
 
 

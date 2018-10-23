@@ -58,9 +58,10 @@ def DicReplace(inFile,outFile):
                 
                 num+=1
                 rep='__&&@__'+str(num)+'__@&&__'
-#               code[rep]=w_m+'<a epub:type="noteref" href="#footnote_'+str(num)+'">ⁿ</a>'
+#               code[rep]=w_m+'<a style="color:#000; text-decoration:none;" epub:type="noteref" href="#footnote_'+str(num)+'">ⁿ</a>'
 #               code[rep]=w_m+'<a epub:type="noteref" href="#footnote_'+str(num)+'">'+w_m+'</a>'
                 code[rep]=' epub:type="noteref" href="#footnote_'+str(num)+'">'+w_m+'</a>'
+#@$%                code[rep]='<a epub:type="noteref" href="#footnote_'+str(num)+'">'+w_m+'</a>'
                 backnote='<aside epub:type="footnote" id="footnote_'+str(num)+'">'+dictionary[w_m]+'</aside>'
                 ttail+=backnote
                 body,a=re.subn(dic[w_m],rep,body);

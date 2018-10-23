@@ -15,12 +15,12 @@
 
 ########### 全 局 变 量################## 
 #词典文件格式为：\tWORD\tMEANING
-source_dict=coca3w9dict
-source_list=coca3w9dict_list
+source_dict=dict
+source_list=dict_list
 topn=1500 #剔除的top N高频词数量
 
 #生成Word列表
-#如果dict_wordlist不存在则从dict中提取
+#如果dict_list不存在则从dict中提取
 echo "$source_list"
 if [  ! -f $source_list ];then
    cat "$(eval echo "$source_dict")" \
